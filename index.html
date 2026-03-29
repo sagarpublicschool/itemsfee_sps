@@ -239,33 +239,63 @@
     }
 
     async function saveData() {
-        let data = {
-            "Month": document.getElementById('Month').value,
-            "Student Id": document.getElementById('Student Id').value,
-            "Student Name": document.getElementById('Student Name').value,
-            "Father Name": document.getElementById('Father Name').value,
-            "Class": document.getElementById('Class').value,
-            "Roll No": document.getElementById('Roll No').value,
-            "Address": document.getElementById('Address').value,
-            "Prev Dues": document.getElementById('Prev Dues').value || 0,
-            "Other": document.getElementById('Other').value || 0,
-            "Discount": document.getElementById('Discount').value || 0,
-            "Total Paid": document.getElementById('Total Paid').value || 0,
-            "Sub Total": document.getElementById('sub_t').value, 
-            "Remaining": document.getElementById('ui_due').innerText
-        };
-        
-        document.querySelectorAll('tr[data-h]').forEach(row => { 
-            let key = row.getAttribute('data-h');
-            data[key] = row.querySelector('.a-in').value || 0;
-            data[key + "_detail"] = row.querySelector('.d-in').value;
-            data[key + "_qty"] = row.querySelector('.q-in').value || 1;
+    let monthName = document.getElementById('Month').value; // e.g. "January"
+    
+    let data = {
+        "Paid Date": new Date().toLocaleDateString('en-GB'),
+        "Month": monthName,
+        "Student Id": document.getElementById('Student Id').value,
+        "Student Name": document.getElementById('Student Name').value,
+        "Father Name": document.getElementById('Father Name').value,
+        "Class": document.getElementById('Class').value,
+        "Roll No": document.getElementById('Roll No').value,
+        "Address": document.getElementById('Address').value,
+        "Prev Dues": parseFloat(document.getElementById('Prev Dues').value) || 0,
+        "Other": parseFloat(document.getElementById('Other').value) || 0,
+        "Discount": parseFloat(document.getElementById('Discount').value) || 0,
+        "Total Paid": parseFloat(document.getElementById('Total Paid').value) || 0,
+        "Sub Total": parseFloat(document.getElementById('sub_t').value) || 0, 
+        "Remaining": parseFloat(document.getElementById('ui_due').innerText) || 0
+    };
+    
+    // Dynamic rows (Uniform, Books etc.) ko data object mein add karna
+    document.querySelectorAll('tr[data-h]').forEach(row => { 
+        let key = row.getAttribute('data-h');
+        data[key] = parseFloat(row.querySelector('.a-in').value) || 0;
+        data[key + "_detail"] = row.querySelector('.d-in').value;
+        data[key + "_qty"] = row.querySelector('.q-in').value || 1;
+    });
+    
+    Swal.fire({
+        title: 'Saving Data...',
+        text: 'Please wait',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors", // Ye zaroori hai redirect errors se bachne ke liye
+            body: JSON.stringify(data)
+        });
+
+        // 'no-cors' mein response read nahi hota, isliye hum direct success maan kar receipt dikhayenge
+        Swal.fire({
+            icon: 'success',
+            title: 'Saved Successfully',
+            timer: 1500,
+            showConfirmButton: false
         });
         
-        Swal.fire({title:'Saving...', didOpen:()=>Swal.showLoading()});
-        await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(data) });
-        showDualReceipt(data);
+        showDualReceipt(data); // Receipt open karein
+
+    } catch (error) {
+        console.error("Error:", error);
+        Swal.fire("Error", "Data save nahi ho paya. Connection check karein.", "error");
     }
+}
+
 
     async function doSearch() {
         let sid = document.getElementById('search-sid').value;
