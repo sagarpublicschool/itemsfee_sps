@@ -367,10 +367,10 @@
     // MERGED LOGIC: GENERATE RECEIPT WITH DETAILS
     function generateReceiptHTML(d, type) {
         let sl = 1; let rows = "";
-        const main = ["Prev Dues", "Admission Fee", "School Fee", "School Van Fee", "Hostel Fee", "Exam Fee"];
+        const main = ["Prev Dues", "Shirts", "Pants", "Tie", "Belt", "Logo", "ID Card", "Shoes", "Socks", "Blazer", "Sweater", "Topi", "Scarf", "Others"];
         main.forEach(k => { if(d[k]>0) rows += `<tr><td align="center">${sl++}.</td><td>${k}</td><td align="center">1</td><td align="center">${d[k]}</td></tr>`; });
         
-        const uniformList = ["Shirts", "Pants", "T-Shirts", "Trousers", "Leggings", "Blazer", "Sweater", "Belt", "Tie", "Shoes", "Socks", "Uniform"];
+        const uniformList = ["Dress", "Uniform"];
         const booksList = ["Books Fee", "Copies", "Cover", "Geo-Box", "Diary", "Insta-Kit", "Urdu Quaida", "Stationary"];
         const miscList = ["Water Bottle", "Sports items", "Misc."];
 
