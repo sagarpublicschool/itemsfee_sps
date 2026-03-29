@@ -274,7 +274,7 @@
         let sub = 0;
         document.querySelectorAll('.calc-total').forEach(i => sub += parseFloat(i.value) || 0);
         // Regular fixed fields
-        const fixed = ["Prev Dues", "Admission Fee", "School Fee", "School Van Fee", "Hostel Fee", "Exam Fee", "School Bag", "Development Fee", "Other Fee"];
+        const fixed = ["Prev Dues", "Shirts", "Pants", "Tie", "Belt", "Logo", "ID Card", "Shoes", "Socks", "Blazer", "Sweater", "Topi", "Scarf", "Others"];
         fixed.forEach(id => { sub += parseFloat(document.getElementById(id).value) || 0; });
 
         document.getElementById('sub_t').value = sub;
