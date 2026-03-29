@@ -270,7 +270,7 @@
         let sub = 0;
         document.querySelectorAll('.calc-total').forEach(i => sub += parseFloat(i.value) || 0);
         // Regular fixed fields
-        const fixed = ["Prev Du", "Oth"];
+        const fixed = ["Prev Dues", "Other"];
         fixed.forEach(id => { sub += parseFloat(document.getElementById(id).value) || 0; });
 
         document.getElementById('sub_t').value = sub;
@@ -289,8 +289,6 @@
             "Class": document.getElementById('Class').value,
             "Roll No": document.getElementById('Roll No').value,
             "Address": document.getElementById('Address').value,
-            "Prev Dues": document.getElementById('Prev Dues').value || 0,
-            "Other": document.getElementById('Other').value || 0,
             "Discount": document.getElementById('Discount').value || 0,
             "Total Paid": document.getElementById('Total Paid').value || 0,
             "Sub Total": subTotal, 
