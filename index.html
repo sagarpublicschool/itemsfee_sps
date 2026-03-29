@@ -5,7 +5,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-    /* INTERFACE STYLES */
+    /* INTERFACE STYLES - NO CHANGES HERE */
     :root { --p: #1a237e; --bg: #f4f7f6; }
     body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding-top: 100px; }
     
@@ -19,8 +19,8 @@
     label { font-size: 11px; font-weight: bold; color: #444; margin-bottom: 2px; display: block; }
     input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 13px; }
     
-    /* BLUE BOX STYLE FOR DETAILS */
-    .detail-box { border: 1px solid #2196F3 !important; background: #e3f2fd; color: #0d47a1; font-weight: bold; }
+    /* NEW BLUE BOX STYLE */
+    .detail-box { border: 1px solid #2196F3 !important; background: #e3f2fd !important; color: #0d47a1 !important; font-weight: bold; }
 
     .fee-table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
     .total-box { background: #fff9c4; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #fbc02d; }
@@ -29,6 +29,8 @@
     /* SEARCH STYLES */
     #search-view { display: none; }
     .month-card { background: #fff; border-left: 5px solid var(--p); border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #ddd; }
+    .month-info h4 { margin: 0; color: #333; font-size: 14px; }
+    .month-info p { margin: 2px 0 0; font-size: 12px; color: #666; }
     .btn-view { background: #e91e63; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
 
     /* RECEIPT DESIGN */
@@ -145,11 +147,6 @@
 </div>
 
 <div id="search-view" class="container no-print">
-    <h2 style="text-align:center; color:var(--p); font-size:16px;">Search Fee Records</h2>
-    <div style="display:flex; gap:5px; margin-bottom:15px;">
-        <input type="text" id="search-sid" placeholder="Enter Student ID">
-        <button onclick="doSearch()" style="background:var(--p); color:white; border:none; padding:0 20px; border-radius:4px; cursor:pointer;">SEARCH</button>
-    </div>
     <div id="resultsList"></div>
 </div>
 
@@ -192,20 +189,19 @@
         return str.trim();
     }
 
-    // 1. DROPDOWN + BLUE TEXTBOX FEATURE
+    // 1. UPDATED ADDROW WITH BLUE BOX
     function addRow(type) {
         const val = document.getElementById(type + '-dropdown').value;
-        if(!val) return;
+        if(!val || document.querySelector(`[data-h="${val}"]`)) return;
         const body = document.getElementById(type + '-body');
         const tr = document.createElement('tr');
         tr.setAttribute('data-h', val);
         tr.innerHTML = `<td style="text-align:left; padding-left:10px;"><b>${val}</b></td>
-                        <td><input type="text" class="detail-box" placeholder="Write Detail..."></td>
+                        <td width="130"><input type="text" class="detail-box" placeholder="Detail (Optional)"></td>
                         <td width="50"><input type="number" class="q-in" value="1" oninput="calculate()"></td>
-                        <td width="80"><input type="number" class="a-in" oninput="calculate()" value="0"></td>
+                        <td width="80"><input type="number" class="a-in calc-total" oninput="calculate()" value="0"></td>
                         <td width="30" style="color:red; cursor:pointer" onclick="this.parentElement.remove();calculate()">✖</td>`;
         body.appendChild(tr);
-        document.getElementById(type + '-dropdown').value = "";
     }
 
     function calculate() {
@@ -241,44 +237,19 @@
             "Remaining": document.getElementById('ui_due').innerText
         };
 
-        // 2. SHEET POST FIX LOGIC
-        document.querySelectorAll('tr[data-h]').forEach(row => {
+        // 2. SHEET POST FIX (data[colName] = amount)
+        document.querySelectorAll('tr[data-h]').forEach(row => { 
             let colName = row.getAttribute('data-h');
-            data[colName] = row.querySelector('.a-in').value || 0;
+            data[colName] = row.querySelector('.a-in').value || 0; 
+            
+            // Receipt ke liye detail store kar rahe hain
             let detail = row.querySelector('.detail-box').value;
-            if(detail) data[colName + "_detail"] = detail; // Detail alag key mein save hogi receipt ke liye
+            if(detail) data[colName + "_dt"] = detail;
         });
         
         Swal.fire({title:'Saving...', didOpen:()=>Swal.showLoading()});
         await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(data) });
         showDualReceipt(data);
-    }
-
-    async function doSearch() {
-        let sid = document.getElementById('search-sid').value;
-        if(!sid) return;
-        Swal.fire({title:'Searching...', didOpen:()=>Swal.showLoading()});
-        try {
-            const res = await fetch(`${SCRIPT_URL}?action=searchData&id=${sid}`);
-            allRecords = await res.json();
-            Swal.close();
-            if(!allRecords.length) { document.getElementById('resultsList').innerHTML = "No record found"; return; }
-            let html = "";
-            allRecords.reverse().forEach((r, i) => {
-                html += `<div class="month-card">
-                    <div class="month-info"><h4>${r.Month}</h4><p>Paid: ₹${r["Total Paid"]} | ${r["Paid Date"] || ""}</p></div>
-                    <button class="btn-view" onclick="viewReceipt(${i})">VIEW RECEIPT</button>
-                </div>`;
-            });
-            document.getElementById('resultsList').innerHTML = html;
-        } catch(e) { Swal.fire("Error", "Check Connection", "error"); }
-    }
-
-    function viewReceipt(index) { showDualReceipt(allRecords[index]); }
-
-    function closeReceipt() {
-        document.getElementById('receipt-modal').style.display = 'none';
-        document.querySelectorAll('.container').forEach(c => c.style.display = 'block');
     }
 
     function showDualReceipt(d) {
@@ -291,49 +262,45 @@
 
     function generateReceiptHTML(d, type) {
         let sl = 1; let rows = "";
-        const mainKeys = ["Prev Dues", "Admission Fee", "School Fee", "School Van Fee", "Hostel Fee", "Exam Fee", "School Bag", "Development Fee", "Other Fee"];
         
-        mainKeys.forEach(k => { 
-            if(d[k]>0) rows += `<tr><td align="center">${sl++}.</td><td>${k}</td><td align="center">1</td><td align="center">${d[k]}</td></tr>`; 
-        });
-
-        // 3. RECEIPT DETAIL LOGIC (BRACKET PRINTING)
-        const dynamicKeys = [
+        // Sabhi possible keys ko check karna receipt ke liye
+        const allKeys = [
+            "Prev Dues", "Admission Fee", "School Fee", "School Van Fee", "Hostel Fee", "Exam Fee",
             "Shirts", "Pants", "T-Shirts", "Trousers", "Leggings", "Blazer", "Sweater", "Belt", "Tie", "Shoes", "Socks", "Uniform",
             "Books Fee", "Copies", "Cover", "Instrument Box", "Diary", "Stationary",
-            "Republic Day Fee", "Independence Day Fee", "UDISE Fee"
+            "Republic Day Fee", "Independence Day Fee", "UDISE Fee",
+            "School Bag", "Development Fee", "Other Fee"
         ];
 
-        dynamicKeys.forEach(k => {
+        allKeys.forEach(k => {
             if(d[k] > 0) {
-                let detailText = d[k + "_detail"] ? ` (${d[k + "_detail"]})` : "";
-                rows += `<tr><td align="center">${sl++}.</td><td>${k}${detailText}</td><td align="center">1</td><td align="center">${d[k]}</td></tr>`;
+                // 3. RECEIPT DETAIL LOGIC
+                let detail = d[k + "_dt"] ? ` (${d[k + "_dt"]})` : "";
+                rows += `<tr><td align="center">${sl++}.</td><td>${k}${detail}</td><td align="center">1</td><td align="center">${d[k]}</td></tr>`;
             }
         });
 
-        let receiptNo = "S P S S __________";
         let dateVal = d["Paid Date"] || new Date().toLocaleDateString('en-GB');
 
         return `
             <div class="receipt-inner">
                 <div class="r-header">
-                    <div style="display:flex; justify-content:space-between;"><span class="copy-tag">${type}</span><span style="font-size:8px">Contact No: 9279583673,9973048043</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span class="copy-tag">${type}</span><span style="font-size:8px">Contact: 9279583673</span></div>
                     <h2>SAGAR PUBLIC SCHOOL</h2>
                     <p>QUAZITOLA, BARSOI (KATIHAR)</p>
-                    <p style="font-size:7px">RTE Reg No.21211472023218114225 | UDISE No.10101122703</p>
+                    <p style="font-size:7px">UDISE No.10101122703</p>
                 </div>
-                <div class="top-info"><span>Receipt No: ${receiptNo}</span><span>Date: ${dateVal}</span></div>
+                <div class="top-info"><span>Receipt No: SPSS/___</span><span>Date: ${dateVal}</span></div>
                 <div class="student-details">
                     <div><b>Name:</b> ${d["Student Name"]}</div><div><b>ID:</b> ${d["Student Id"]}</div>
                     <div><b>Father:</b> ${d["Father Name"]}</div><div><b>Class:</b> ${d["Class"]}</div>
-                    <div><b>Address:</b> ${d["Address"]}</div><div><b>Month:</b> ${d["Month"]}</div>
+                    <div><b>Month:</b> ${d["Month"]}</div>
                 </div>
                 <table class="r-table">
                     <thead><tr><th>Sl.</th><th>Description</th><th>Qty</th><th>Amount</th></tr></thead>
                     <tbody>${rows}</tbody>
                     <tfoot>
                         <tr><th colspan="3" align="right">Sub Total</th><td align="center">${d["Sub Total"]}</td></tr>
-                        <tr><th colspan="3" align="right">Discount (-)</th><td align="center">${d["Discount"]}</td></tr>
                         <tr><th colspan="3" align="right">Net Paid</th><td align="center"><b>${d["Total Paid"]}</b></td></tr>
                         <tr><th colspan="3" align="right">Due Balance</th><td align="center" style="color:red"><b>${d["Remaining"]}</b></td></tr>
                     </tfoot>
@@ -341,6 +308,11 @@
                 <div class="words-section"><b>Words:</b> ${numberToWords(d["Total Paid"])} Only.</div>
                 <div class="footer-sigs"><span>Parent Signature</span><span>Authorized Signature</span></div>
             </div>`;
+    }
+
+    function closeReceipt() {
+        document.getElementById('receipt-modal').style.display = 'none';
+        document.querySelectorAll('.container').forEach(c => c.style.display = 'block');
     }
 </script>
 </body>
