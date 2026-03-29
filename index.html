@@ -557,16 +557,21 @@
         calculate();
     }
 
-    function calculate() {
+        function calculate() {
         let sub = 0;
-        document.querySelectorAll('.calc-total').forEach(i => sub += parseFloat(i.value) || 0);
-        // Regular fixed fields
+        
+        // Sabhi inputs jinme 'calc-total' class hai (including Prev Dues, Other, and Dynamic rows)
+        document.querySelectorAll('.calc-total').forEach(i => {
+            sub += parseFloat(i.value) || 0;
+        });
 
-        fixed.forEach(id => { sub += parseFloat(document.getElementById(id).value) || 0; });
+        // Ab 'fixed' array wala loop delete kar diya hai kyunki class se addition ho chuka hai.
 
         document.getElementById('sub_t').value = sub;
         let disc = parseFloat(document.getElementById('Discount').value) || 0;
         let paid = parseFloat(document.getElementById('Total Paid').value) || 0;
+        
+        // Final Dues Calculation
         document.getElementById('ui_due').innerText = (sub - disc) - paid;
     }
 
