@@ -239,63 +239,58 @@
     }
 
     async function saveData() {
-    let monthName = document.getElementById('Month').value; // e.g. "January"
-    
-    let data = {
-        "Paid Date": new Date().toLocaleDateString('en-GB'),
-        "Month": monthName,
-        "Student Id": document.getElementById('Student Id').value,
-        "Student Name": document.getElementById('Student Name').value,
-        "Father Name": document.getElementById('Father Name').value,
-        "Class": document.getElementById('Class').value,
-        "Roll No": document.getElementById('Roll No').value,
-        "Address": document.getElementById('Address').value,
-        "Prev Dues": parseFloat(document.getElementById('Prev Dues').value) || 0,
-        "Other": parseFloat(document.getElementById('Other').value) || 0,
-        "Discount": parseFloat(document.getElementById('Discount').value) || 0,
-        "Total Paid": parseFloat(document.getElementById('Total Paid').value) || 0,
-        "Sub Total": parseFloat(document.getElementById('sub_t').value) || 0, 
-        "Remaining": parseFloat(document.getElementById('ui_due').innerText) || 0
-    };
-    
-    // Dynamic rows (Uniform, Books etc.) ko data object mein add karna
-    document.querySelectorAll('tr[data-h]').forEach(row => { 
-        let key = row.getAttribute('data-h');
-        data[key] = parseFloat(row.querySelector('.a-in').value) || 0;
-        data[key + "_detail"] = row.querySelector('.d-in').value;
-        data[key + "_qty"] = row.querySelector('.q-in').value || 1;
-    });
-    
-    Swal.fire({
-        title: 'Saving Data...',
-        text: 'Please wait',
-        allowOutsideClick: false,
-        didOpen: () => { Swal.showLoading(); }
-    });
+        let sid = document.getElementById('Student Id').value;
+        if(!sid) { Swal.fire("Error", "Please enter Student ID", "error"); return; }
 
-    try {
-        const response = await fetch(SCRIPT_URL, {
-            method: "POST",
-            mode: "no-cors", // Ye zaroori hai redirect errors se bachne ke liye
-            body: JSON.stringify(data)
-        });
-
-        // 'no-cors' mein response read nahi hota, isliye hum direct success maan kar receipt dikhayenge
-        Swal.fire({
-            icon: 'success',
-            title: 'Saved Successfully',
-            timer: 1500,
-            showConfirmButton: false
+        let data = {
+            "Month": document.getElementById('Month').value,
+            "Student Id": sid,
+            "Student Name": document.getElementById('Student Name').value,
+            "Father Name": document.getElementById('Father Name').value,
+            "Class": document.getElementById('Class').value,
+            "Roll No": document.getElementById('Roll No').value,
+            "Address": document.getElementById('Address').value,
+            "Prev Dues": document.getElementById('Prev Dues').value || 0,
+            "Other": document.getElementById('Other').value || 0,
+            "Discount": document.getElementById('Discount').value || 0,
+            "Total Paid": document.getElementById('Total Paid').value || 0,
+            "Sub Total": document.getElementById('sub_t').value, 
+            "Remaining": document.getElementById('ui_due').innerText
+        };
+        
+        document.querySelectorAll('tr[data-h]').forEach(row => { 
+            let key = row.getAttribute('data-h');
+            data[key] = row.querySelector('.a-in').value || 0;
+            data[key + "_detail"] = row.querySelector('.d-in').value;
+            data[key + "_qty"] = row.querySelector('.q-in').value || 1;
         });
         
-        showDualReceipt(data); // Receipt open karein
+        Swal.fire({
+            title:'Saving Record...', 
+            text: 'Processing request',
+            allowOutsideClick: false,
+            didOpen:()=>Swal.showLoading()
+        });
 
-    } catch (error) {
-        console.error("Error:", error);
-        Swal.fire("Error", "Data save nahi ho paya. Connection check karein.", "error");
+        try {
+            // Hum isse bina error ke handle karne ke liye direct fetch ka use karenge
+            await fetch(SCRIPT_URL, { 
+                method: "POST", 
+                mode: "no-cors", 
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data) 
+            });
+
+            // No-cors mein humein response nahi dikhta, par action trigger ho jata hai
+            setTimeout(() => {
+                Swal.fire({ icon: 'success', title: 'Saved!', timer: 800, showConfirmButton: false });
+                showDualReceipt(data);
+            }, 1000);
+
+        } catch (err) {
+            Swal.fire("Error", "Check your internet or Sheet names", "error");
+        }
     }
-}
-
 
     async function doSearch() {
         let sid = document.getElementById('search-sid').value;
@@ -354,6 +349,8 @@
             if(temp) rows += `<tr><td align="center">${sl++}.</td><td colspan="3"><b>${g.name}</b></td></tr>` + temp;
         });
 
+        let pDate = d["Paid Date"] || new Date().toLocaleDateString('en-GB');
+
         return `
             <div class="receipt-inner">
                 <div class="r-header">
@@ -364,7 +361,7 @@
                     <p style="font-size:7px">RTE Reg No.21211472023218114225</p>
                     <p style="font-size:7px">UDISE No.10101122703</p>
                 </div>
-                <div class="top-info"><span>Receipt No: S P S S __________</span><span>Date: ${d["Paid Date"] || new Date().toLocaleDateString('en-GB')}</span></div>
+                <div class="top-info"><span>Receipt No: S P S S __________</span><span>Date: ${pDate}</span></div>
                 <div class="student-details">
                     <div><b>Name:</b> ${d["Student Name"]}</div><div><b>ID:</b> ${d["Student Id"]}</div>
                     <div><b>Father:</b> ${d["Father Name"]}</div><div><b>Class:</b> ${d["Class"]}</div>
