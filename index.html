@@ -18,12 +18,13 @@
     .grid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
     label { font-size: 11px; font-weight: bold; color: #444; margin-bottom: 2px; display: block; }
     input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 13px; }
+    
+    /* BLUE BOX STYLE FOR DETAILS */
+    .detail-box { border: 1px solid #2196F3 !important; background: #e3f2fd; color: #0d47a1; font-weight: bold; }
+
     .fee-table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
     .total-box { background: #fff9c4; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #fbc02d; }
     .btn-save { width: 100%; padding: 15px; background: #2e7d32; color: white; border: none; border-radius: 6px; font-weight: bold; margin-top: 15px; cursor: pointer; font-size: 16px; }
-
-    /* Editable box styling */
-    .detail-in { border: 1px solid #1a237e !important; background: #f0f4ff; }
 
     /* SEARCH STYLES */
     #search-view { display: none; }
@@ -191,15 +192,15 @@
         return str.trim();
     }
 
+    // 1. DROPDOWN + BLUE TEXTBOX FEATURE
     function addRow(type) {
         const val = document.getElementById(type + '-dropdown').value;
         if(!val) return;
         const body = document.getElementById(type + '-body');
         const tr = document.createElement('tr');
         tr.setAttribute('data-h', val);
-        tr.setAttribute('data-type', type);
-        tr.innerHTML = `<td style="text-align:left; padding-left:5px;"><b>${val}</b></td>
-                        <td><input type="text" class="detail-in" placeholder="Khali box" style="font-size:11px;"></td>
+        tr.innerHTML = `<td style="text-align:left; padding-left:10px;"><b>${val}</b></td>
+                        <td><input type="text" class="detail-box" placeholder="Write Detail..."></td>
                         <td width="50"><input type="number" class="q-in" value="1" oninput="calculate()"></td>
                         <td width="80"><input type="number" class="a-in" oninput="calculate()" value="0"></td>
                         <td width="30" style="color:red; cursor:pointer" onclick="this.parentElement.remove();calculate()">✖</td>`;
@@ -240,11 +241,12 @@
             "Remaining": document.getElementById('ui_due').innerText
         };
 
+        // 2. SHEET POST FIX LOGIC
         document.querySelectorAll('tr[data-h]').forEach(row => {
             let colName = row.getAttribute('data-h');
             data[colName] = row.querySelector('.a-in').value || 0;
-            let det = row.querySelector('.detail-in').value;
-            if(det) data[colName + "_info"] = det;
+            let detail = row.querySelector('.detail-box').value;
+            if(detail) data[colName + "_detail"] = detail; // Detail alag key mein save hogi receipt ke liye
         });
         
         Swal.fire({title:'Saving...', didOpen:()=>Swal.showLoading()});
@@ -289,22 +291,23 @@
 
     function generateReceiptHTML(d, type) {
         let sl = 1; let rows = "";
-        const mainFees = ["Prev Dues", "Admission Fee", "School Fee", "School Van Fee", "Hostel Fee", "Exam Fee", "School Bag", "Development Fee", "Other Fee"];
+        const mainKeys = ["Prev Dues", "Admission Fee", "School Fee", "School Van Fee", "Hostel Fee", "Exam Fee", "School Bag", "Development Fee", "Other Fee"];
         
-        // Add Main Fees
-        mainFees.forEach(k => { if(d[k]>0) rows += `<tr><td align="center">${sl++}.</td><td>${k}</td><td align="center">1</td><td align="center">${d[k]}</td></tr>`; });
-        
-        // Add Dynamic Fees (Uniform, Books, Misc)
-        const uniformList = ["Shirts", "Pants", "T-Shirts", "Trousers", "Leggings", "Blazer", "Sweater", "Belt", "Tie", "Shoes", "Socks", "Uniform"];
-        const booksList = ["Books Fee", "Copies", "Cover", "Instrument Box", "Diary", "Stationary"];
-        const miscList = ["Republic Day Fee", "Independence Day Fee", "UDISE Fee"];
-        
-        const allDynamic = [...uniformList, ...booksList, ...miscList];
-        
-        allDynamic.forEach(k => {
+        mainKeys.forEach(k => { 
+            if(d[k]>0) rows += `<tr><td align="center">${sl++}.</td><td>${k}</td><td align="center">1</td><td align="center">${d[k]}</td></tr>`; 
+        });
+
+        // 3. RECEIPT DETAIL LOGIC (BRACKET PRINTING)
+        const dynamicKeys = [
+            "Shirts", "Pants", "T-Shirts", "Trousers", "Leggings", "Blazer", "Sweater", "Belt", "Tie", "Shoes", "Socks", "Uniform",
+            "Books Fee", "Copies", "Cover", "Instrument Box", "Diary", "Stationary",
+            "Republic Day Fee", "Independence Day Fee", "UDISE Fee"
+        ];
+
+        dynamicKeys.forEach(k => {
             if(d[k] > 0) {
-                let info = d[k + "_info"] ? ` (${d[k + "_info"]})` : "";
-                rows += `<tr><td align="center">${sl++}.</td><td>${k}${info}</td><td align="center">1</td><td align="center">${d[k]}</td></tr>`;
+                let detailText = d[k + "_detail"] ? ` (${d[k + "_detail"]})` : "";
+                rows += `<tr><td align="center">${sl++}.</td><td>${k}${detailText}</td><td align="center">1</td><td align="center">${d[k]}</td></tr>`;
             }
         });
 
@@ -339,8 +342,6 @@
                 <div class="footer-sigs"><span>Parent Signature</span><span>Authorized Signature</span></div>
             </div>`;
     }
-
-    window.onload = () => { showView('entry'); };
 </script>
 </body>
 </html>
