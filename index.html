@@ -113,6 +113,7 @@
     <div class="grid-row" style="margin-top:10px;">
         <div><label>Student Id</label><input type="text" id="Student Id"></div>
         <div><label>Class</label><input type="text" id="Class"></div>
+        <div><label>Roll No</label><input type="text" id="Roll No"></div>
     </div>
     <div class="grid-row">
         <div><label>Student Name</label><input type="text" id="Student Name"></div>
@@ -120,74 +121,64 @@
     </div>
     <div><label>Address</label><input type="text" id="Address"></div>
 
-    <div class="section-title">1-5. Regular Fees</div>
+    <div class="section-title">1-14. Regular Fees</div>
     <div class="grid-row">
         <div><label>Previous Due</label><input type="number" class="calc-total" id="Prev Dues" oninput="calculate()"></div>
-        <div><label>Admission Fee</label><input type="number" class="calc-total" id="Admission Fee" oninput="calculate()"></div>
+        <div><label>Shirts</label><input type="number" class="calc-total" id="Shirts" oninput="calculate()"></div>
     </div>
     <div class="grid-row">
-        <div><label>School Fee</label><input type="number" class="calc-total" id="School Fee" oninput="calculate()"></div>
-        <div><label>School Van Fee</label><input type="number" class="calc-total" id="School Van Fee" oninput="calculate()"></div>
+        <div><label>Pants</label><input type="number" class="calc-total" id="Pants" oninput="calculate()"></div>
+        <div><label>Tie</label><input type="number" class="calc-total" id="Tie" oninput="calculate()"></div>
     </div>
     <div class="grid-row">
-        <div><label>Hostel Fee</label><input type="number" class="calc-total" id="Hostel Fee" oninput="calculate()"></div>
-        <div><label>Exam Fee</label><input type="number" class="calc-total" id="Exam Fee" oninput="calculate()"></div>
+        <div><label>Belt</label><input type="number" class="calc-total" id="Belt" oninput="calculate()"></div>
+        <div><label>Logo</label><input type="number" class="calc-total" id="Logo" oninput="calculate()"></div>
+    </div>
+    <div class="grid-row">
+        <div><label>ID Card</label><input type="number" class="calc-total" id="ID Card" oninput="calculate()"></div>
+        <div><label>Shoes</label><input type="number" class="calc-total" id="Shoes" oninput="calculate()"></div>
+    </div>
+    <div class="grid-row">
+        <div><label>Shocks</label><input type="number" class="calc-total" id="Socks" oninput="calculate()"></div>
+        <div><label>Blazer</label><input type="number" class="calc-total" id="Blazer" oninput="calculate()"></div>
+    </div>
+    <div class="grid-row">
+        <div><label>Sweater</label><input type="number" class="calc-total" id="Sweater" oninput="calculate()"></div>
+        <div><label>Topi</label><input type="number" class="calc-total" id="Topi" oninput="calculate()"></div>
+    </div>
+    <div class="grid-row">
+        <div><label>Scarf</label><input type="number" class="calc-total" id="Scarf" oninput="calculate()"></div>
+        <div><label>Others</label><input type="number" class="calc-total" id="Others" oninput="calculate()"></div>
     </div>
 
-    <div class="section-title">6. School Uniform Fee</div>
-    <div style="display:flex; gap:5px; margin-bottom:5px;">
-        <select id="uni-dropdown">
-            <option value="">Select Uniform...</option>
-            <option value="Shirts">Shirts</option>
-            <option value="Pants">Pants</option>
-            <option value="T-Shirts">T-Shirts</option>
-            <option value="Trousers">Trousers</option>
-            <option value="Leggings">Leggings</option>
-            <option value="Blazer">Blazer</option>
-            <option value="Sweater">Sweater</option>
-            <option value="Belt">Belt</option>
-            <option value="Tie">Tie</option>
-            <option value="Shoes">Shoes</option>
-            <option value="Socks">Socks</option>
-            <option value="Uniform">Uniform</option>
-        </select>
-        <button onclick="addRow('uni')" style="background:var(--p); color:white; border:none; padding:5px 12px; border-radius:4px;">ADD</button>
-    </div>
-    <table class="fee-table"><tbody id="uni-body"></tbody></table>
-
-    <div class="section-title">7. School Books & Others</div>
+    <div class="section-title">15. School Books & Others</div>
     <div style="display:flex; gap:5px; margin-bottom:5px;">
         <select id="book-dropdown">
             <option value="">Select Books...</option>
             <option value="Books Fee">Books Fee</option>
             <option value="Copies">Copies</option>
             <option value="Cover">Cover</option>
-            <option value="Instrument Box">Instrument Box</option>
+            <option value="Geo-Box">Geo-Box</option>
             <option value="Diary">Diary</option>
+            <option value="Insta-Kit">Insta-Kit</option>
+            <option value="Urdu Quaida">Urdu Quaida</option>
             <option value="Stationary">Stationary</option>
         </select>
         <button onclick="addRow('book')" style="background:var(--p); color:white; border:none; padding:5px 12px; border-radius:4px;">ADD</button>
     </div>
     <table class="fee-table"><tbody id="book-body"></tbody></table>
 
-    <div class="section-title">8. Miscellaneous Fee</div>
+    <div class="section-title">16. Miscellaneous</div>
     <div style="display:flex; gap:5px; margin-bottom:5px;">
         <select id="oth-dropdown">
-            <option value="">Select Miscellaneous Fee...</option>
-            <option value="Republic Day Fee">Republic Day Fee</option>
-            <option value="Independence Day Fee">Independence Day Fee</option>
-            <option value="UDISE Fee">UDISE Fee</option>
+            <option value="">Select Miscellaneous...</option>
+            <option value="Water Bottle">Water Bottle</option>
+            <option value="Sports items">Sports items</option>
+            <option value="Misc.">Misc.</option>
         </select>
         <button onclick="addRow('oth')" style="background:var(--p); color:white; border:none; padding:5px 12px; border-radius:4px;">ADD</button>
     </div>
     <table class="fee-table"><tbody id="oth-body"></tbody></table>
-    
-    <div class="section-title">Additional Fees</div>
-    <div class="grid-row">
-        <div><label>9. School Bag</label><input type="number" class="calc-total" id="School Bag" oninput="calculate()"></div>
-        <div><label>10. Development Fee</label><input type="number" class="calc-total" id="Development Fee" oninput="calculate()"></div>
-    </div>
-    <div><label>11. Other Fee</label><input type="number" class="calc-total" id="Other Fee" oninput="calculate()"></div>
 
     <div class="total-box">
         <div class="grid-row">
