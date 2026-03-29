@@ -291,17 +291,22 @@
             "Student Name": document.getElementById('Student Name').value,
             "Father Name": document.getElementById('Father Name').value,
             "Class": document.getElementById('Class').value,
+            "Roll No": document.getElementById('Roll No').value,
             "Address": document.getElementById('Address').value,
             "Prev Dues": document.getElementById('Prev Dues').value || 0,
-            "Admission Fee": document.getElementById('Admission Fee').value || 0,
-            "School Fee": document.getElementById('School Fee').value || 0,
-            "School Van Fee": document.getElementById('School Van Fee').value || 0,
-            "Hostel Fee": document.getElementById('Hostel Fee').value || 0,
-            "Exam Fee": document.getElementById('Exam Fee').value || 0,
-            "School Bag": document.getElementById('School Bag').value || 0,
-            "Development Fee": document.getElementById('Development Fee').value || 0,
-            "Other Fee": document.getElementById('Other Fee').value || 0,
-            "Discount": document.getElementById('Discount').value || 0,
+            "Shirts": document.getElementById('Shirts').value || 0,
+            "Pants": document.getElementById('Pants').value || 0,
+            "Tie": document.getElementById('Tie').value || 0,
+            "Belt": document.getElementById('Belt').value || 0,
+            "Logo": document.getElementById('Logo').value || 0,
+            "ID Card": document.getElementById('ID Card').value || 0,
+            "Shoes": document.getElementById('Shoes').value || 0,
+            "Socks": document.getElementById('Socks').value || 0,
+            "Blazer": document.getElementById('Blazer').value || 0,
+            "Sweater": document.getElementById('Sweater').value || 0,
+            "Topi": document.getElementById('Topi').value || 0,
+            "Scarf": document.getElementById('Scarf').value || 0,
+            "Others": document.getElementById('Others').value || 0,
             "Total Paid": document.getElementById('Total Paid').value || 0,
             "Sub Total": subTotal, 
             "Remaining": document.getElementById('ui_due').innerText
@@ -366,8 +371,8 @@
         main.forEach(k => { if(d[k]>0) rows += `<tr><td align="center">${sl++}.</td><td>${k}</td><td align="center">1</td><td align="center">${d[k]}</td></tr>`; });
         
         const uniformList = ["Shirts", "Pants", "T-Shirts", "Trousers", "Leggings", "Blazer", "Sweater", "Belt", "Tie", "Shoes", "Socks", "Uniform"];
-        const booksList = ["Books Fee", "Copies", "Cover", "Instrument Box", "Diary", "Stationary"];
-        const miscList = ["Republic Day Fee", "Independence Day Fee", "UDISE Fee"];
+        const booksList = ["Books Fee", "Copies", "Cover", "Geo-Box", "Diary", "Insta-Kit", "Urdu Quaida", "Stationary"];
+        const miscList = ["Water Bottle", "Sports items", "Misc."];
 
         let uTemp = ""; let uC = 1;
         let bTemp = ""; let bC = 1;
