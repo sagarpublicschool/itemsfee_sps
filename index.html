@@ -6,7 +6,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-    /* INTERFACE STYLES */
+    /* INTERFACE STYLES - NO CHANGES */
     :root { --p: #1a237e; --bg: #f4f7f6; }
     body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding-top: 100px; }
     
@@ -29,41 +29,12 @@
     .month-info p { margin: 2px 0 0; font-size: 12px; color: #666; }
     .btn-view { background: #e91e63; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
 
-    /* ORIGINAL RECEIPT DESIGN RESTORED */
     #receipt-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; overflow-y: auto; padding: 0; }
     
-    .print-wrapper { 
-        display: flex;
-        justify-content: space-evenly;
-        align-items: flex-start;
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        padding: 5mm 0;
-        box-sizing: border-box;
-        position: relative;
-    }
+    .print-wrapper { display: flex; justify-content: space-evenly; align-items: flex-start; width: 100%; max-width: 100%; margin: 0; padding: 5mm 0; box-sizing: border-box; position: relative; }
+    .print-wrapper::after { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; border-left: 2px dotted #444; transform: translateX(-50%); }
 
-    .print-wrapper::after {
-        content: "";
-        position: absolute;
-        left: 50%;
-        top: 0;
-        bottom: 0;
-        border-left: 2px dotted #444;
-        transform: translateX(-50%);
-    }
-
-    .receipt-box { 
-        width: 47%;
-        background: #ffdae9; 
-        border: 1.5px solid #000; 
-        padding: 10px; 
-        color: #000; 
-        font-family: Arial, sans-serif; 
-        box-sizing: border-box;
-    }
-
+    .receipt-box { width: 47%; background: #ffdae9; border: 1.5px solid #000; padding: 10px; color: #000; font-family: Arial, sans-serif; box-sizing: border-box; }
     .r-header h2 { margin: 0; font-size: 16px; font-weight: 900; text-align: center; }
     .r-header p { margin: 1px; font-size: 7.5px; font-weight: bold; text-align: center; }
     .top-info { display: flex; justify-content: space-between; font-size: 9px; margin-top: 4px; border-bottom: 1px solid #000; padding-bottom: 2px; }
@@ -231,7 +202,9 @@
 
     function calculate() {
         let sub = 0;
+        // All fields having class 'calc-total' including Prev Dues & Other
         document.querySelectorAll('.calc-total').forEach(i => sub += parseFloat(i.value) || 0);
+        
         document.getElementById('sub_t').value = sub;
         let disc = parseFloat(document.getElementById('Discount').value) || 0;
         let paid = parseFloat(document.getElementById('Total Paid').value) || 0;
@@ -240,8 +213,8 @@
 
     async function saveData() {
         let sid = document.getElementById('Student Id').value;
-        if(!sid) { Swal.fire("Error", "Please enter Student ID", "error"); return; }
-
+        if(!sid) { Swal.fire("Error", "Student Id is required", "error"); return; }
+        
         let data = {
             "Month": document.getElementById('Month').value,
             "Student Id": sid,
@@ -250,45 +223,27 @@
             "Class": document.getElementById('Class').value,
             "Roll No": document.getElementById('Roll No').value,
             "Address": document.getElementById('Address').value,
-            "Prev Dues": document.getElementById('Prev Dues').value || 0,
-            "Other": document.getElementById('Other').value || 0,
-            "Discount": document.getElementById('Discount').value || 0,
-            "Total Paid": document.getElementById('Total Paid').value || 0,
-            "Sub Total": document.getElementById('sub_t').value, 
-            "Remaining": document.getElementById('ui_due').innerText
+            "Prev Dues": parseFloat(document.getElementById('Prev Dues').value) || 0,
+            "Other": parseFloat(document.getElementById('Other').value) || 0,
+            "Discount": parseFloat(document.getElementById('Discount').value) || 0,
+            "Total Paid": parseFloat(document.getElementById('Total Paid').value) || 0,
+            "Sub Total": parseFloat(document.getElementById('sub_t').value) || 0, 
+            "Remaining": parseFloat(document.getElementById('ui_due').innerText) || 0
         };
         
         document.querySelectorAll('tr[data-h]').forEach(row => { 
             let key = row.getAttribute('data-h');
-            data[key] = row.querySelector('.a-in').value || 0;
+            data[key] = parseFloat(row.querySelector('.a-in').value) || 0;
             data[key + "_detail"] = row.querySelector('.d-in').value;
             data[key + "_qty"] = row.querySelector('.q-in').value || 1;
         });
         
-        Swal.fire({
-            title:'Saving Record...', 
-            text: 'Processing request',
-            allowOutsideClick: false,
-            didOpen:()=>Swal.showLoading()
-        });
-
+        Swal.fire({title:'Saving...', didOpen:()=>Swal.showLoading()});
         try {
-            // Hum isse bina error ke handle karne ke liye direct fetch ka use karenge
-            await fetch(SCRIPT_URL, { 
-                method: "POST", 
-                mode: "no-cors", 
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data) 
-            });
-
-            // No-cors mein humein response nahi dikhta, par action trigger ho jata hai
-            setTimeout(() => {
-                Swal.fire({ icon: 'success', title: 'Saved!', timer: 800, showConfirmButton: false });
-                showDualReceipt(data);
-            }, 1000);
-
-        } catch (err) {
-            Swal.fire("Error", "Check your internet or Sheet names", "error");
+            await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(data) });
+            showDualReceipt(data);
+        } catch(e) {
+            Swal.fire("Error", "Internet connection issues", "error");
         }
     }
 
@@ -349,8 +304,6 @@
             if(temp) rows += `<tr><td align="center">${sl++}.</td><td colspan="3"><b>${g.name}</b></td></tr>` + temp;
         });
 
-        let pDate = d["Paid Date"] || new Date().toLocaleDateString('en-GB');
-
         return `
             <div class="receipt-inner">
                 <div class="r-header">
@@ -361,7 +314,7 @@
                     <p style="font-size:7px">RTE Reg No.21211472023218114225</p>
                     <p style="font-size:7px">UDISE No.10101122703</p>
                 </div>
-                <div class="top-info"><span>Receipt No: S P S S __________</span><span>Date: ${pDate}</span></div>
+                <div class="top-info"><span>Receipt No: S P S S __________</span><span>Date: ${d["Paid Date"] || new Date().toLocaleDateString('en-GB')}</span></div>
                 <div class="student-details">
                     <div><b>Name:</b> ${d["Student Name"]}</div><div><b>ID:</b> ${d["Student Id"]}</div>
                     <div><b>Father:</b> ${d["Father Name"]}</div><div><b>Class:</b> ${d["Class"]}</div>
