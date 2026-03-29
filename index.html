@@ -145,7 +145,7 @@
         </select>
         <button onclick="addRow('book')" style="background:var(--p); color:white; border:none; padding:5px 12px; border-radius:4px;">ADD</button>
     </div>
-    <table class="fee-table"><tbody id="book-body"></tbody></table>
+    <table class="fee-table"><tbody id="uni-body"></tbody></table>
 
     <div class="section-title">4. School Books & Others</div>
     <div style="display:flex; gap:5px; margin-bottom:5px;">
@@ -290,19 +290,7 @@
             "Roll No": document.getElementById('Roll No').value,
             "Address": document.getElementById('Address').value,
             "Prev Dues": document.getElementById('Prev Dues').value || 0,
-            "Shirts": document.getElementById('Shirts').value || 0,
-            "Pants": document.getElementById('Pants').value || 0,
-            "Tie": document.getElementById('Tie').value || 0,
-            "Belt": document.getElementById('Belt').value || 0,
-            "Logo": document.getElementById('Logo').value || 0,
-            "ID Card": document.getElementById('ID Card').value || 0,
-            "Shoes": document.getElementById('Shoes').value || 0,
-            "Socks": document.getElementById('Socks').value || 0,
-            "Blazer": document.getElementById('Blazer').value || 0,
-            "Sweater": document.getElementById('Sweater').value || 0,
-            "Topi": document.getElementById('Topi').value || 0,
-            "Scarf": document.getElementById('Scarf').value || 0,
-            "Others": document.getElementById('Others').value || 0,
+            "Other": document.getElementById('Other').value || 0,
             "Total Paid": document.getElementById('Total Paid').value || 0,
             "Sub Total": subTotal, 
             "Remaining": document.getElementById('ui_due').innerText
