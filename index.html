@@ -121,37 +121,33 @@
     </div>
     <div><label>Address</label><input type="text" id="Address"></div>
 
-    <div class="section-title">1-14. Regular Fees</div>
+    <div class="section-title">1-2. Regular Fees</div>
     <div class="grid-row">
         <div><label>Previous Due</label><input type="number" class="calc-total" id="Prev Dues" oninput="calculate()"></div>
-        <div><label>Shirts</label><input type="number" class="calc-total" id="Shirts" oninput="calculate()"></div>
+        <div><label>Other</label><input type="number" class="calc-total" id="Other" oninput="calculate()"></div>
     </div>
-    <div class="grid-row">
-        <div><label>Pants</label><input type="number" class="calc-total" id="Pants" oninput="calculate()"></div>
-        <div><label>Tie</label><input type="number" class="calc-total" id="Tie" oninput="calculate()"></div>
+    <div class="section-title">3. School Uniform</div>
+    <div style="display:flex; gap:5px; margin-bottom:5px;">
+        <select id="book-dropdown">
+            <option value="">Select Uniform...</option>
+            <option value="Shirts">Shirts</option>
+            <option value="Pants">Pants</option>
+            <option value="Tie">Tie</option>
+            <option value="Belt">Belt</option>
+            <option value="Logo">Logo</option>
+            <option value="ID Card">ID Card</option>
+            <option value="Shoes">Socks</option>
+            <option value="Blazer">Blazer</option>
+            <option value="Sweater">Sweater</option>
+            <option value="Topi">Topi</option>
+            <option value="Scarf">Scarf</option>
+            <option value="Others">Others</option>
+        </select>
+        <button onclick="addRow('book')" style="background:var(--p); color:white; border:none; padding:5px 12px; border-radius:4px;">ADD</button>
     </div>
-    <div class="grid-row">
-        <div><label>Belt</label><input type="number" class="calc-total" id="Belt" oninput="calculate()"></div>
-        <div><label>Logo</label><input type="number" class="calc-total" id="Logo" oninput="calculate()"></div>
-    </div>
-    <div class="grid-row">
-        <div><label>ID Card</label><input type="number" class="calc-total" id="ID Card" oninput="calculate()"></div>
-        <div><label>Shoes</label><input type="number" class="calc-total" id="Shoes" oninput="calculate()"></div>
-    </div>
-    <div class="grid-row">
-        <div><label>Shocks</label><input type="number" class="calc-total" id="Socks" oninput="calculate()"></div>
-        <div><label>Blazer</label><input type="number" class="calc-total" id="Blazer" oninput="calculate()"></div>
-    </div>
-    <div class="grid-row">
-        <div><label>Sweater</label><input type="number" class="calc-total" id="Sweater" oninput="calculate()"></div>
-        <div><label>Topi</label><input type="number" class="calc-total" id="Topi" oninput="calculate()"></div>
-    </div>
-    <div class="grid-row">
-        <div><label>Scarf</label><input type="number" class="calc-total" id="Scarf" oninput="calculate()"></div>
-        <div><label>Others</label><input type="number" class="calc-total" id="Others" oninput="calculate()"></div>
-    </div>
+    <table class="fee-table"><tbody id="book-body"></tbody></table>
 
-    <div class="section-title">15. School Books & Others</div>
+    <div class="section-title">4. School Books & Others</div>
     <div style="display:flex; gap:5px; margin-bottom:5px;">
         <select id="book-dropdown">
             <option value="">Select Books...</option>
@@ -168,7 +164,7 @@
     </div>
     <table class="fee-table"><tbody id="book-body"></tbody></table>
 
-    <div class="section-title">16. Miscellaneous</div>
+    <div class="section-title">5. Miscellaneous</div>
     <div style="display:flex; gap:5px; margin-bottom:5px;">
         <select id="oth-dropdown">
             <option value="">Select Miscellaneous...</option>
@@ -274,7 +270,7 @@
         let sub = 0;
         document.querySelectorAll('.calc-total').forEach(i => sub += parseFloat(i.value) || 0);
         // Regular fixed fields
-        const fixed = ["Prev Dues", "Shirts", "Pants", "Tie", "Belt", "Logo", "ID Card", "Shoes", "Socks", "Blazer", "Sweater", "Topi", "Scarf", "Others"];
+        const fixed = ["Prev Dues", "Other"];
         fixed.forEach(id => { sub += parseFloat(document.getElementById(id).value) || 0; });
 
         document.getElementById('sub_t').value = sub;
@@ -367,10 +363,10 @@
     // MERGED LOGIC: GENERATE RECEIPT WITH DETAILS
     function generateReceiptHTML(d, type) {
         let sl = 1; let rows = "";
-        const main = ["Prev Dues", "Shirts", "Pants", "Tie", "Belt", "Logo", "ID Card", "Shoes", "Socks", "Blazer", "Sweater", "Topi", "Scarf", "Others"];
+        const main = ["Prev Dues", "Other"];
         main.forEach(k => { if(d[k]>0) rows += `<tr><td align="center">${sl++}.</td><td>${k}</td><td align="center">1</td><td align="center">${d[k]}</td></tr>`; });
         
-        const uniformList = ["Dress", "Uniform"];
+        const uniformList = ["Shirts", "Pants", "Tie", "Belt", "Logo", "ID Card", "Shoes", "Socks", "Blazer", "Sweater", "Topi", "Scarf", "Others"];
         const booksList = ["Books Fee", "Copies", "Cover", "Geo-Box", "Diary", "Insta-Kit", "Urdu Quaida", "Stationary"];
         const miscList = ["Water Bottle", "Sports items", "Misc."];
 
