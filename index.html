@@ -63,7 +63,7 @@
     .r-header { position: relative; }
     .r-header h2 { margin: 0; font-size: 17px; font-weight: 900; text-align: center; }
     .r-header p { margin: 0; font-size: 9px; font-weight: bold; text-align: center; line-height: 1.2; }
-    .school-logo { width: 45px; height: 45px; position: absolute; left: 5px; top: 15px; }
+    .school-logo { width: 45px; height: 45px; position: absolute; left: 5px; top: 5px; }
     
     .top-info { display: flex; justify-content: space-between; font-size: 10px; margin-top: 5px; border-bottom: 1px solid #000; padding-bottom: 3px; }
     .copy-tag { background: #000; color: #fff; padding: 2px 8px; font-size: 9px; font-weight: bold; text-transform: uppercase; border-radius: 2px; }
@@ -373,13 +373,14 @@
                 <div class="r-header">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1px;">
                         <span class="copy-tag" style="width:70px;">${type}</span>
-                        <span style="font-weight:bold; font-size:9px; border:1px solid #000; padding:0 6px;">CASH MEMO</span>
-                        <span style="font-size:7px; width:70px; text-align:right;">Mob: 9279583673</span>
+                        <span style="font-weight:bold; font-size:9px; border:1px solid #000; padding:0 6px;">Delivery Purchase Memo</span>
+                        <span style="font-size:7px; width:70px; text-align:right;">Mob: 9279583673, 9973048043</span>
                     </div>
                     <img src="${logoUrl}" class="school-logo">
                     <h2>SAGAR PUBLIC SCHOOL</h2>
                     <p>QUAZITOLA, BARSOI (KATIHAR)</p>
                     <p style="font-size:7px">RTE Reg No.21211472023218114225 | UDISE No.10101122703</p>
+                    <p style="font-size:7px">email - sagarpublicschool2023@gmail.com</p>
                 </div>
                 <div class="top-info"><span>Receipt No: <b>${d["Receipt No"] || "________"}</b></span><span>Date: ${d["Paid Date"] || new Date().toLocaleDateString('en-GB')}</span></div>
                 <div class="student-details">
