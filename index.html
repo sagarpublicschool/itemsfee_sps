@@ -31,33 +31,81 @@
 
     #receipt-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; overflow-y: auto; padding: 0; }
     
-    /* MODIFIED FOR SPACING AND FONT */
-    .print-wrapper { display: flex; justify-content: space-evenly; align-items: flex-start; width: 100%; max-width: 100%; margin: 0; padding: 3mm 0; box-sizing: border-box; position: relative; }
-    .print-wrapper::after { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; border-left: 2px dotted #444; transform: translateX(-50%); }
+    /* PRINT FIT OPTIMIZATION */
+    .print-wrapper { 
+        display: flex; 
+        justify-content: center; 
+        align-items: stretch; 
+        width: 100%; 
+        margin: 0 auto; 
+        padding: 5mm; 
+        box-sizing: border-box; 
+        position: relative; 
+        gap: 8mm;
+    }
+    .print-wrapper::after { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; border-left: 1.5px dotted #000; transform: translateX(-50%); }
 
-    .receipt-box { width: 48%; background: #ffdae9; border: 1.5px solid #000; padding: 12px; color: #000; font-family: Arial, sans-serif; box-sizing: border-box; }
-    .r-header h2 { margin: 0; font-size: 18px; font-weight: 900; text-align: center; }
-    .r-header p { margin: 1px; font-size: 9px; font-weight: bold; text-align: center; }
+    .receipt-box { 
+        width: 48%;
+        background: #ffdae9; 
+        border: 1.2px solid #000; 
+        padding: 8px; 
+        color: #000; 
+        font-family: Arial, sans-serif; 
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 100%;
+        overflow: hidden; /* Bahar jane se rokta hai */
+    }
+
+    .r-header { position: relative; }
+    .r-header h2 { margin: 0; font-size: 17px; font-weight: 900; text-align: center; }
+    .r-header p { margin: 0; font-size: 9px; font-weight: bold; text-align: center; line-height: 1.2; }
+    .school-logo { width: 45px; height: 45px; position: absolute; left: 5px; top: 15px; }
     
-    .top-info { display: flex; justify-content: space-between; font-size: 10px; margin-top: 6px; border-bottom: 1px solid #000; padding-bottom: 4px; }
+    .top-info { display: flex; justify-content: space-between; font-size: 10px; margin-top: 5px; border-bottom: 1px solid #000; padding-bottom: 3px; }
     .copy-tag { background: #000; color: #fff; padding: 2px 8px; font-size: 9px; font-weight: bold; text-transform: uppercase; border-radius: 2px; }
     
-    .student-details { display: grid; grid-template-columns: 1.2fr 0.8fr; font-size: 10.5px; margin-top: 6px; line-height: 1.3; }
+    .student-details { display: grid; grid-template-columns: 1.2fr 0.8fr; font-size: 10.5px; margin-top: 5px; line-height: 1.3; }
     
-    .r-table { width: 100%; border-collapse: collapse; margin-top: 6px; border: 1px solid #000; }
-    /* Increased Padding and Font Size for Table */
-    .r-table th, .r-table td { border: 1px solid #000; padding: 4px 5px; font-size: 10px; line-height: 1.2; }
+    .r-table { width: 100%; border-collapse: collapse; margin-top: 5px; border: 1.2px solid #000; }
+    .r-table th, .r-table td { border: 1px solid #000; padding: 2px 4px; font-size: 9.5px; line-height: 1.1; }
     
-    .words-section { border-bottom: 1px dotted #000; padding: 4px 0; font-size: 10px; margin-top: 6px; font-style: italic; }
-    .footer-sigs { display: flex; justify-content: space-between; margin-top: 25px; font-size: 10.5px; font-weight: bold; }
+    .words-section { border-bottom: 1px dotted #000; padding: 4px 0; font-size: 10px; margin-top: 5px; font-style: italic; }
+    
+    /* Footer section fixed inside the pink box */
+    .footer-sigs { 
+        display: flex; 
+        justify-content: space-between; 
+        margin-top: auto; /* Push to the absolute bottom of the container */
+        padding-top: 15px; 
+        font-size: 10.5px; 
+        font-weight: bold; 
+    }
 
     @media print { 
-        @page { size: A4 landscape; margin: 5mm; } 
+        @page { size: A4 landscape; margin: 0; } 
         .no-print { display: none !important; } 
         body { background: none; padding: 0; margin: 0; }
         #receipt-modal { position: absolute; top: 0; left: 0; width: 100%; display: block !important; padding: 0; }
-        .print-wrapper { width: 100%; margin: 0; display: flex; }
-        .receipt-box { border: 1.5px solid #000; -webkit-print-color-adjust: exact; }
+        
+        .print-wrapper { 
+            width: 297mm; 
+            height: 210mm; 
+            padding: 4mm;
+            display: flex;
+            align-items: stretch;
+            transform: scale(0.97); 
+            transform-origin: top center;
+        }
+        
+        .receipt-box { 
+            height: 195mm; /* Fixed height for A4 to ensure footers stay inside */
+            -webkit-print-color-adjust: exact; 
+            print-color-adjust: exact;
+        }
     }
 </style>
 </head>
@@ -157,6 +205,14 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZyQyJKT3ic7rorLOOymtvEIfWRAoxwVCpVHmLg-RQGCmkm51ANYzp4knvS4AIa3aI/exec";
     let allRecords = [];
 
+    window.onload = async () => {
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=searchData&id=all`);
+            const data = await res.json();
+            if(data && Array.isArray(data)) allRecords = data;
+        } catch(e) { console.log("Init load failed"); }
+    };
+
     function showView(view) {
         document.getElementById('entry-view').style.display = view === 'entry' ? 'block' : 'none';
         document.getElementById('search-view').style.display = view === 'search' ? 'block' : 'none';
@@ -215,7 +271,14 @@
     async function saveData() {
         let sid = document.getElementById('Student Id').value;
         if(!sid) { Swal.fire("Error", "Student Id is required", "error"); return; }
+        
+        let now = new Date(); 
+        let currentYear = now.getFullYear();
+        let nextSerial = (allRecords && allRecords.length > 0) ? allRecords.length + 1 : 1;
+        let rNo = "SPS_" + currentYear + "/" + nextSerial.toString().padStart(2, '0');
+
         let data = {
+            "Receipt No": rNo,
             "Month": document.getElementById('Month').value,
             "Student Id": sid,
             "Student Name": document.getElementById('Student Name').value,
@@ -228,17 +291,21 @@
             "Discount": parseFloat(document.getElementById('Discount').value) || 0,
             "Total Paid": parseFloat(document.getElementById('Total Paid').value) || 0,
             "Sub Total": parseFloat(document.getElementById('sub_t').value) || 0, 
-            "Remaining": parseFloat(document.getElementById('ui_due').innerText) || 0
+            "Remaining": parseFloat(document.getElementById('ui_due').innerText) || 0,
+            "Paid Date": now.toLocaleDateString('en-GB')
         };
+
         document.querySelectorAll('tr[data-h]').forEach(row => { 
             let key = row.getAttribute('data-h');
             data[key] = parseFloat(row.querySelector('.a-in').value) || 0;
             data[key + "_detail"] = row.querySelector('.d-in').value;
             data[key + "_qty"] = row.querySelector('.q-in').value || 1;
         });
-        Swal.fire({title:'Saving...', didOpen:()=>Swal.showLoading()});
+
+        Swal.fire({title:'Saving...', didOpen:()=>Swal.showLoading(), allowOutsideClick: false});
         try {
             await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(data) });
+            allRecords.push(data);
             showDualReceipt(data);
         } catch(e) {
             Swal.fire("Error", "Internet connection issues", "error");
@@ -251,21 +318,19 @@
         Swal.fire({title:'Searching...', didOpen:()=>Swal.showLoading()});
         try {
             const res = await fetch(`${SCRIPT_URL}?action=searchData&id=${sid}`);
-            allRecords = await res.json();
+            let results = await res.json();
             Swal.close();
-            if(!allRecords.length) { document.getElementById('resultsList').innerHTML = "No record found"; return; }
+            if(!results.length) { document.getElementById('resultsList').innerHTML = "No record found"; return; }
             let html = "";
-            allRecords.reverse().forEach((r, i) => {
+            results.reverse().forEach((r, i) => {
                 html += `<div class="month-card">
-                    <div class="month-info"><h4>${r.Month}</h4><p>Paid: ₹${r["Total Paid"]} | ${r["Paid Date"] || ""}</p></div>
-                    <button class="btn-view" onclick="viewReceipt(${i})">VIEW RECEIPT</button>
+                    <div class="month-info"><h4>${r.Month}</h4><p>Receipt: ${r["Receipt No"] || "N/A"} | Paid: ₹${r["Total Paid"]}</p></div>
+                    <button class="btn-view" onclick="showDualReceipt(allRecords.find(x => x['Receipt No'] === '${r['Receipt No']}'))">VIEW RECEIPT</button>
                 </div>`;
             });
             document.getElementById('resultsList').innerHTML = html;
         } catch(e) { Swal.fire("Error", "Check Connection", "error"); }
     }
-
-    function viewReceipt(index) { showDualReceipt(allRecords[index]); }
 
     function closeReceipt() {
         document.getElementById('receipt-modal').style.display = 'none';
@@ -273,6 +338,7 @@
     }
 
     function showDualReceipt(d) {
+        if(!d) return;
         document.getElementById('guardian-copy').innerHTML = generateReceiptHTML(d, "Guardian's Copy");
         document.getElementById('office-copy').innerHTML = generateReceiptHTML(d, "Office Copy");
         Swal.close();
@@ -299,17 +365,23 @@
             });
             if(temp) rows += `<tr><td align="center">${sl++}.</td><td colspan="3"><b>${g.name}</b></td></tr>` + temp;
         });
+
+        let logoUrl = "https://drive.google.com/thumbnail?id=1pWEjzAU2G4AUC0RhIJ8cMHdLtLvQ4YJe&sz=w300";
+
         return `
-            <div class="receipt-inner">
+            <div class="receipt-inner" style="display:flex; flex-direction:column; height:100%;">
                 <div class="r-header">
-                    <div style="display:flex; justify-content:space-between;"><span class="copy-tag">${type}</span><span style="font-size:9px">Contact: 9279583673</span></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1px;">
+                        <span class="copy-tag" style="width:70px;">${type}</span>
+                        <span style="font-weight:bold; font-size:9px; border:1px solid #000; padding:0 6px;">CASH MEMO</span>
+                        <span style="font-size:7px; width:70px; text-align:right;">Mob: 9279583673</span>
+                    </div>
+                    <img src="${logoUrl}" class="school-logo">
                     <h2>SAGAR PUBLIC SCHOOL</h2>
                     <p>QUAZITOLA, BARSOI (KATIHAR)</p>
-                    <p style="font-size:8px">email: sagarpublicschool2023@gmail.com</p>
-                    <p style="font-size:8px">RTE Reg No.21211472023218114225</p>
-                    <p style="font-size:8px">UDISE No.10101122703</p>
+                    <p style="font-size:7px">RTE Reg No.21211472023218114225 | UDISE No.10101122703</p>
                 </div>
-                <div class="top-info"><span>Receipt No: S P S S __________</span><span>Date: ${d["Paid Date"] || new Date().toLocaleDateString('en-GB')}</span></div>
+                <div class="top-info"><span>Receipt No: <b>${d["Receipt No"] || "________"}</b></span><span>Date: ${d["Paid Date"] || new Date().toLocaleDateString('en-GB')}</span></div>
                 <div class="student-details">
                     <div><b>Name:</b> ${d["Student Name"]}</div><div><b>ID:</b> ${d["Student Id"]}</div>
                     <div><b>Father:</b> ${d["Father Name"]}</div><div><b>Class:</b> ${d["Class"]}</div>
