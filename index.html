@@ -312,7 +312,7 @@
         }
     }
 
-    async function doSearch() {
+        async function doSearch() {
         let sid = document.getElementById('search-sid').value;
         if(!sid) return;
         Swal.fire({title:'Searching...', didOpen:()=>Swal.showLoading()});
@@ -320,16 +320,28 @@
             const res = await fetch(`${SCRIPT_URL}?action=searchData&id=${sid}`);
             let results = await res.json();
             Swal.close();
-            if(!results.length) { document.getElementById('resultsList').innerHTML = "No record found"; return; }
+            if(!results || !results.length) { 
+                document.getElementById('resultsList').innerHTML = "No record found"; 
+                return; 
+            }
+            
+            // Search results ko local memory (allRecords) mein update kar rahe hain taaki VIEW button kaam kare
+            allRecords = results; 
+
             let html = "";
             results.reverse().forEach((r, i) => {
                 html += `<div class="month-card">
-                    <div class="month-info"><h4>${r.Month}</h4><p>Receipt: ${r["Receipt No"] || "N/A"} | Paid: ₹${r["Total Paid"]}</p></div>
-                    <button class="btn-view" onclick="showDualReceipt(allRecords.find(x => x['Receipt No'] === '${r['Receipt No']}'))">VIEW RECEIPT</button>
+                    <div class="month-info">
+                        <h4>${r.Month}</h4>
+                        <p>Receipt: ${r["Receipt No"] || "N/A"} | Paid: ₹${r["Total Paid"]}</p>
+                    </div>
+                    <button class="btn-view" onclick="showDualReceipt(allRecords[${i}])">VIEW RECEIPT</button>
                 </div>`;
             });
             document.getElementById('resultsList').innerHTML = html;
-        } catch(e) { Swal.fire("Error", "Check Connection", "error"); }
+        } catch(e) { 
+            Swal.fire("Error", "Connection Error", "error"); 
+        }
     }
 
     function closeReceipt() {
